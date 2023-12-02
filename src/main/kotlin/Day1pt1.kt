@@ -2,7 +2,7 @@ import java.io.File
 
 fun main() {
     print(
-        File("./input/day1/pt1")
+        File("./input/day1/data")
             .readLines()
             .map { line ->
                 val ints = line.split("").filter { c -> c.toIntOrNull() != null }
