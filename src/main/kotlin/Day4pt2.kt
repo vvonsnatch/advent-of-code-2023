@@ -9,18 +9,17 @@ fun main() {
 
     lines.forEachIndexed() { ind, line ->
         val card = line.split(":")[1]
-        val winningNumbers = card.split("|")[0].split(" ").map { numStr -> numStr.toIntOrNull() }.filterNotNull()
-        val myNumbers = card.split("|")[1].split(" ").map { numStr -> numStr.toIntOrNull() }.filterNotNull()
+        val winningNumbers = card.split("|")[0].split(" ").mapNotNull { numStr -> numStr.toIntOrNull() }.toSet()
+        val myNumbers = card.split("|")[1].split(" ").mapNotNull { numStr -> numStr.toIntOrNull() }.toSet()
         val intersection = myNumbers.intersect(winningNumbers)
 
         println("Card ${ind + 1}: ${intersection.size} wins - ${cardCount[ind]} copies")
 
         (ind + 1..<ind + 1 + intersection.size).forEach { i ->
-            for (j in 0 until cardCount[ind]) {
+            for (j in 0 ..< cardCount[ind]) {
                 println("  +1 copy of card ${i + 1}")
                 cardCount[i] += 1
             }
-
         }
     }
 

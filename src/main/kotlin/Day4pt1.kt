@@ -8,8 +8,8 @@ fun main() {
 
     lines.forEach { line ->
         val card = line.split(":")[1]
-        val winningNumbers = card.split("|")[0].split(" ").map { numStr -> numStr.toIntOrNull() }.filterNotNull()
-        val myNumbers = card.split("|")[1].split(" ").map { numStr -> numStr.toIntOrNull() }.filterNotNull()
+        val winningNumbers = card.split("|")[0].split(" ").mapNotNull { numStr -> numStr.toIntOrNull() }.toSet()
+        val myNumbers = card.split("|")[1].split(" ").mapNotNull { numStr -> numStr.toIntOrNull() }.toSet()
         val intersection = myNumbers.intersect(winningNumbers)
 
         println("winning numbers: $winningNumbers")
@@ -17,7 +17,7 @@ fun main() {
         println("intersection: $intersection")
         println()
 
-        points += if (intersection.size > 0) (2.0).pow(intersection.size - 1) else 0.0
+        points += if (intersection.isNotEmpty()) (2.0).pow(intersection.size - 1) else 0.0
     }
 
     println(points)
