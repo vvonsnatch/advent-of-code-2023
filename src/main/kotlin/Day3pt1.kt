@@ -3,7 +3,7 @@ import java.io.File
 fun main() {
     val grid = mutableListOf<List<String>>()
 
-    File("input/day3/data").readLines().forEachIndexed { ind, line ->
+    File("input/day3/data").readLines().forEach { line ->
         grid.add(line.split("").slice(1..line.length))
     }
 
@@ -39,7 +39,7 @@ fun main() {
 
             if (numStart != null && numEnd != null) {
                 try {
-                    val numRange =  numStart..numEnd// if (numEnd == numCols) numStart..numEnd else numStart..<numEnd
+                    val numRange = numStart..numEnd // if (numEnd == numCols) numStart..numEnd else numStart..<numEnd
                     val currentNum = grid[i].slice(numRange).joinToString(separator = "").toInt()
                     val currentNumIndices: Array<Array<Int>> = (numRange).toList().map { col -> arrayOf(i, col) }.toTypedArray()
 
