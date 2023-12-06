@@ -1,17 +1,19 @@
 import java.io.BufferedReader
 import java.io.FileReader
-class RangeMap(source: Long, destination: Long, range: Long)
+
+class RangeMap(val source: Long, val destination: Long, val range: Long)
+
 fun main() {
     val reader = BufferedReader(FileReader("input/day5/data"))
 
     var seeds: List<Long> = emptyList()
-    val seedToSoil: MutableMap<Long, Long> = mutableMapOf()
-    val soilToFertilizer: MutableMap<Long, Long> = mutableMapOf()
-    val fertilizerToWater: MutableMap<Long, Long> = mutableMapOf()
-    val waterToLight: MutableMap<Long, Long> = mutableMapOf()
-    val lightToTemp: MutableMap<Long, Long> = mutableMapOf()
-    val tempToHumidity: MutableMap<Long, Long> = mutableMapOf()
-    val humidityToLocation: MutableMap<Long, Long> = mutableMapOf()
+    val seedToSoil: MutableList<RangeMap> = mutableListOf()
+    val soilToFertilizer: MutableList<RangeMap> = mutableListOf()
+    val fertilizerToWater: MutableList<RangeMap> = mutableListOf()
+    val waterToLight: MutableList<RangeMap> = mutableListOf()
+    val lightToTemp: MutableList<RangeMap> = mutableListOf()
+    val tempToHumidity: MutableList<RangeMap> = mutableListOf()
+    val humidityToLocation: MutableList<RangeMap> = mutableListOf()
 
     var line: String?
 
@@ -19,7 +21,7 @@ fun main() {
         if (line == "") {
             continue
         } else if (line!!.contains("seeds")) {
-            seeds = line!!.split(":")[1].split(" ").mapNotNull { it.toLongOrNull()}
+            seeds = line!!.split(":")[1].split(" ").mapNotNull { it.toLongOrNull() }
         } else if (line!!.contains("seed-to-soil")) {
             var seedToSoilMapStr: String?
             while (reader.readLine().also { seedToSoilMapStr = it } != "") {
@@ -76,38 +78,47 @@ fun main() {
     }
 
     val locations: List<Long> = seeds.map {
-        var soil: Long?
-        var fertilizer: Long?
-        var water: Long?
-        var light: Long?
-        var temp: Long?
-        var humidity: Long?
+        val soil: Long?
+        val fertilizer: Long?
+        val water: Long?
+        val light: Long?
+        val temp: Long?
+        val humidity: Long?
 
-        soil = if (seedToSoil.containsKey(it)) seedToSoil[it] else it
-        fertilizer = if (soilToFertilizer.containsKey(soil)) soilToFertilizer[soil] else soil
-        water = if (fertilizerToWater.containsKey(fertilizer)) fertilizerToWater[fertilizer] else fertilizer
-        light = if (waterToLight.containsKey(water)) waterToLight[water] else water
-        temp = if (lightToTemp.containsKey(light)) lightToTemp[light] else light
-        humidity = if (tempToHumidity.containsKey(temp)) tempToHumidity[temp] else temp
+        soil = findInMap(it, seedToSoil)
+        fertilizer = findInMap(soil, soilToFertilizer)
+        water = findInMap(fertilizer, fertilizerToWater)
+        light = findInMap(water, waterToLight)
+        temp = findInMap(light, lightToTemp)
+        humidity = findInMap(temp, tempToHumidity)
 
-        if (humidityToLocation.containsKey(humidity)) humidityToLocation[humidity]!! else humidity!!
+        findInMap(humidity, humidityToLocation)
     }
 
     println(locations.min())
 }
 
-fun addToMap(mapStr: String, map: MutableMap<Long, Long>) {
+fun addToMap(mapStr: String, list: MutableList<RangeMap>) {
     val mapList = mapStr.split(" ").mapNotNull { it.toLongOrNull() }
     val destination = mapList[0]
     val source = mapList[1]
-    val rangeLength = mapList[2]
+    val range = mapList[2]
 
-    var it = 0
-    while (it < rangeLength){
-//        println("${source + it} -> ${destination + it}")
-        map[source + it] = destination + it
-        it++
+    list.add(RangeMap(source, destination, range))
+
+    println("source: $source, destination: $destination, range: $range")
+}
+
+fun findInMap(item: Long, list: List<RangeMap>): Long {
+    list.forEach { rangeMap ->
+        if (item >= rangeMap.source && item < (rangeMap.source + rangeMap.range)) {
+            if (rangeMap.destination > rangeMap.source) {
+                return item + (rangeMap.destination - rangeMap.source)
+            } else {
+                return item - (rangeMap.source - rangeMap.destination)
+            }
+        }
     }
 
-    println(map)
+    return item
 }
